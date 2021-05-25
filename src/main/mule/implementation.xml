@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:hertz-car-rental-api="http://www.mulesoft.org/schema/mule/hertz-car-rental-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/hertz-car-rental-api http://www.mulesoft.org/schema/mule/hertz-car-rental-api/current/mule-hertz-car-rental-api.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	
+	
+	<flow name="process-rental-flow" doc:id="5e40f673-ac66-44d7-adca-710940734abb" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="bee34a6d-abb3-487c-bb99-414e6be79592" >
+			<route >
+				<try doc:name="Try" doc:id="e2a93103-36ba-4e23-935f-368e0a7a2ce6" >
+					<http:request method="GET" doc:name="getNational" doc:id="869445a7-c373-423e-92e8-fd871aeac4d3" config-ref="national_HTTP_Request_configuration" path="/national/rentals/{dropoff}">
+					<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"dropoff" : message.attributes.queryParams.dropoffLocation
+}]]]></http:uri-params>
+				</http:request>
+					<ee:transform doc:name="JSON to [CarRental]" doc:id="ea7f625d-0fe7-4e30-85bf-2ba21888d0e2" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+Rentals: payload.rentals map ( rental , indexOfRental ) ->
+{
+	origin: rental.pickup,
+	destination: rental.dropoff,
+	rentDate: rental.rentDate,
+	price: rental.price,
+	totalSeats: rental.totalSeats,
+	brand: rental.brand,
+	company: rental.company
+} as Object {
+	class : "com.conflowence.training.CarRental"
+} 
+]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="Error Continue" doc:id="fad95d5b-0379-4b45-a2d5-d2e484853c70" type="ANY" >
+							<ee:transform doc:name="[]" doc:id="397783be-6590-41c6-8ce6-d99fe9890393" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+			<route >
+				<try doc:name="Try" doc:id="e7c9ae98-9b9b-4fea-91dd-f053612305e3" >
+					<http:request method="GET" doc:name="hertzapi" doc:id="32bbd42c-87b2-4b0e-8e47-e83450100352" config-ref="hertz_HTTP_Request_configuration" path="${hertz.path}">
+						<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"dropoff" : message.attributes.queryParams.dropoffLocation
+}]]]></http:uri-params>
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"pickupLocation" : message.attributes.queryParams.pickupLocation,
+	"dropoffLocation" : message.attributes.queryParams.dropoffLocation
+}]]]></http:query-params>
+					</http:request>
+					<ee:transform doc:name="JSON to [CarRental]" doc:id="737e4083-d709-43c4-a63e-cf6830fc4796" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	carBrand: payload01.car.brand,
+	carTotalSeats: payload01.car.totalSeats,
+	company: "Hertz",
+	dropoffLocation: payload01.dropoffLocation,
+	pickupLocation: payload01.pickupLocation,
+	price: payload01.price,
+	rentDate: payload01.rentDate
+} as Object {
+	class : "com.conflowence.training.CarRental"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<error-handler>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="Error Continue" doc:id="d6d77457-25c1-4c87-b508-32dc3342c5d9" type="ANY" >
+							<ee:transform doc:name="[]" doc:id="2ca2d51c-e0c3-455a-a273-6057265ce65e" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="flatten to [carRental]" doc:id="12176064-ae93-4938-92c2-f0b6e4766909" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+flatten(payload..payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6a9d44b9-3d44-4ba7-8dd8-fc49324d96dd" />
+	</flow>
+</mule>

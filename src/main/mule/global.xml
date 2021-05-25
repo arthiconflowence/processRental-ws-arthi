@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:hertz-car-rental-api="http://www.mulesoft.org/schema/mule/hertz-car-rental-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/hertz-car-rental-api http://www.mulesoft.org/schema/mule/hertz-car-rental-api/current/mule-hertz-car-rental-api.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="30d8c56d-6b0a-482a-91ae-a6244ea0744c" file="config.yaml" />
+	<http:request-config name="hertz_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="5c5097f7-0079-4e12-8c07-d3140ff35790">
+		<http:request-connection host="${hertz.host}" port="${hertz.port}" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b167b732-afb4-4bc1-a0da-9f36904ad615" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<http:request-config name="national_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="49d2de8b-7c8b-4016-bada-94563f27bb32">
+		<http:request-connection host="${national.host}" port="${national.port}" />
+	</http:request-config>
+</mule>
