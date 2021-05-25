@@ -47,12 +47,7 @@
 						<region>us-east-2</region>
 					</cloudHubDeployment>
 					<classifier>mule-application</classifier>
-					<sharedLibraries>
-						<sharedLibrary>
-							<groupId>mysql</groupId>
-							<artifactId>mysql-connector-java</artifactId>
-						</sharedLibrary>
-					</sharedLibraries>
+					
 				</configuration>
 			</plugin>
 		</plugins>
