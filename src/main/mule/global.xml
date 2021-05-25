@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/hertz-car-rental-api http://www.mulesoft.org
 		<http:request-connection host="${hertz.host}" port="${hertz.port}" />
 	</http:request-config>
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b167b732-afb4-4bc1-a0da-9f36904ad615" >
-		<http:listener-connection host="${http.host}" port="${http.port}" />
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
 	</http:listener-config>
 	<http:request-config name="national_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="49d2de8b-7c8b-4016-bada-94563f27bb32">
 		<http:request-connection host="${national.host}" port="${national.port}" />
