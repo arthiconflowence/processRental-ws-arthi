@@ -3,13 +3,13 @@ http:
   port: "8082"
   
 hertz:
-  host: "0.0.0.0"
+  host: "system-proxy-hertz-arthi.us-e2.cloudhub.io"
   port: "8083" 
   path: "/api/rentals"  
   
 
 national: 
   host: "national-car-rental-ws.us-e2.cloudhub.io"
-  port: "80"
+  port: "8084"
   basepath: "/"
   protocol: "HTTP"
