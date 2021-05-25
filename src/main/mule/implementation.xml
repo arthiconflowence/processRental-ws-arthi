@@ -20,10 +20,11 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	"dropoff" : message.attributes.queryParams.dropoffLocation
 }]]]></http:uri-params>
 				</http:request>
+					<logger level="INFO" doc:name="Logger" doc:id="4ff6d60c-2274-4bad-b6eb-3942759bc3a1" message="#[payload]"/>
 					<ee:transform doc:name="JSON to [CarRental]" doc:id="ea7f625d-0fe7-4e30-85bf-2ba21888d0e2" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
+output application/java
 ---
 Rentals: payload.rentals map ( rental , indexOfRental ) ->
 {
@@ -69,6 +70,7 @@ output application/java
 	"dropoffLocation" : message.attributes.queryParams.dropoffLocation
 }]]]></http:query-params>
 					</http:request>
+					<logger level="INFO" doc:name="Logger" doc:id="965a594b-97f1-41cc-8631-8850546c8328" message="#[payload]"/>
 					<ee:transform doc:name="JSON to [CarRental]" doc:id="737e4083-d709-43c4-a63e-cf6830fc4796" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
